@@ -28,6 +28,13 @@ myApp.factory('instagram', function($resource){
 
 function GameBoardController($scope, $timeout, instagram){
 
+  $scope.deal = function(){
+    $scope.cards = [];
+    $scope.flippedCards = [];
+    $scope.pairedCards = [];
+    $scope.fetchCards();
+  };
+
   $scope.fetchCards = function(){
 
     instagram.fetchPopular(10, function(data){
@@ -72,17 +79,13 @@ function GameBoardController($scope, $timeout, instagram){
       }
   };
 
-  $scope.paired = function(card){
+  $scope.isPaired = function(card){
     return $scope.pairedCards.indexOf(card) !== -1;
   }
 
-  $scope.faceUp = function(card){
+  $scope.isFaceUp = function(card){
     return $scope.flippedCards.indexOf(card) !== -1;
   }
 
-  $scope.cards = [];
-  $scope.flippedCards = [];
-  $scope.pairedCards = [];
-  $scope.fetchCards();
-
+  $scope.deal();
 }
