@@ -58,8 +58,8 @@ function GameBoardController($scope, $timeout, instagram){
         if($scope.flippedCards[0].id == $scope.flippedCards[1].id) {
 
           $timeout(function(){
-            $scope.flippedCards[0].paired = true;
-            $scope.flippedCards[1].paired = true;
+            $scope.pairedCards.push($scope.flippedCards[0]);
+            $scope.pairedCards.push($scope.flippedCards[1]);
             $scope.flippedCards = [];
           }, 400);
 
@@ -72,12 +72,17 @@ function GameBoardController($scope, $timeout, instagram){
       }
   };
 
+  $scope.paired = function(card){
+    return $scope.pairedCards.indexOf(card) !== -1;
+  }
+
   $scope.faceUp = function(card){
     return $scope.flippedCards.indexOf(card) !== -1;
   }
 
   $scope.cards = [];
   $scope.flippedCards = [];
+  $scope.pairedCards = [];
   $scope.fetchCards();
 
 }
