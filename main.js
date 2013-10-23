@@ -53,8 +53,6 @@ function GameBoardController($scope, $timeout, instagram){
 
       $scope.flippedCards.push(card);
 
-      console.log($scope.flippedCards);
-
       if($scope.flippedCards.length > 1){
 
         if($scope.flippedCards[0].id == $scope.flippedCards[1].id) {

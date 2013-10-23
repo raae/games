@@ -9,10 +9,9 @@
   <body ng-app="myApp">
 
     <ul id="gameBoard" ng-controller="GameBoardController">
-      <li class="card" ng-repeat="card in cards">
-        <img class="face-up" ng-show="faceUp(card) && !card.paired" ng-src="{{card.images.low_resolution.url}}" />
-        <div class="face-down" ng-show="!faceUp(card) && !card.paired" ng-click="flipCard(card)"></div>
-        <div class="paired" ng-show="card.paired"></div>
+      <li class="card" ng-repeat="card in cards" ng-class="{faceup: faceUp(card), paired: card.paired}">
+        <img ng-show="faceUp(card) && !card.paired" ng-src="{{card.images.low_resolution.url}}" />
+        <div ng-show="!faceUp(card) && !card.paired" ng-click="flipCard(card)"></div>
       </li>
     </ul>
 
