@@ -1,0 +1,20 @@
+<html>
+  <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular-resource.min.js"></script>
+    <script src="main.js"></script>
+    <link rel="stylesheet" type="text/css" href="main.css">
+  </head>
+
+  <body ng-app="myApp">
+
+    <ul id="gameBoard" ng-controller="GameBoardController">
+      <li class="card" ng-repeat="card in cards">
+        <img class="face-up" ng-show="faceUp(card) && !card.paired" ng-src="{{card.images.low_resolution.url}}" />
+        <div class="face-down" ng-show="!faceUp(card) && !card.paired" ng-click="flipCard(card)"></div>
+        <div class="paired" ng-show="card.paired"></div>
+      </li>
+    </ul>
+
+  </body>
+</html>
