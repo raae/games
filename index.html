@@ -8,12 +8,20 @@
 
   <body ng-app="myApp">
 
-    <ul id="gameBoard" ng-controller="GameBoardController">
-      <li class="card" ng-repeat="card in cards" ng-class="{faceup: faceUp(card), paired: card.paired}">
-        <img ng-show="faceUp(card) && !card.paired" ng-src="{{card.images.low_resolution.url}}" />
-        <div ng-show="!faceUp(card) && !card.paired" ng-click="flipCard(card)"></div>
-      </li>
-    </ul>
+    <aside ng-controller="InstagramUserController">
+      <div ng-show="user.username == 'lilly_labs'">
+        <h1>You are playing with @{{user.username}}' photos.</h1>
+        <a ng-click="authenticateUser()">Click here to play with your own Instagram photos!</a>
+      </div>
+    </aside>
+
+    <section id="gameBoard" ng-controller="GameBoardController">
+      <div class="card" ng-repeat="card in cards" ng-class="{faceup: isFaceUp(card), paired: isPaired(card)}">
+        <img ng-show="isFaceUp(card) && !isPaired(card)" ng-src="{{card.images.low_resolution.url}}" />
+        <div ng-show="!isFaceUp(card) && !isPaired(card)" ng-click="flipCard(card)"></div>
+      </div>
+
+    </section>
 
   </body>
 </html>

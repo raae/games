@@ -1,15 +1,50 @@
 var myApp = angular.module("myApp", ['ngResource']);
 
-myApp.factory('instagram', function($resource){
+
+myApp.factory('Utility', function($resource){
+  return {
+
+    defaultAccessToken: function(){
+      return "412669471.c7333f1.e0b75f7652474bec8487d57fcc835635"
+    },
+
+    instagramClientId: function() {
+      if(window.location.host.indexOf('localhost') > -1)
+        return 'c7333f11111045efaedab47680c60437';
+      else if(window.location.host.indexOf('github.io') > -1)
+        return '3c52889feb714456b62ba61fe7add54b';
+    }
+
+  }
+
+});
+
+myApp.factory('Instagram', function($resource, Utility){
 
   return {
-    fetchPopular: function(count, callback){
 
+    user: {
+      accessToken: Utility.defaultAccessToken()
+    },
+
+    authenticateUser: function(){
+
+      var client_id = Utility.instagramClientId();
+
+      var authenticationUrl = 'https://instagram.com/oauth/authorize/?client_id='
+        +client_id+'&redirect_uri='
+        +window.location.href+'&response_type=token';
+
+      window.location.href = authenticationUrl;
+
+    },
+
+    fetchPhotos: function(count, instagramUser, callback){
       // The ngResource module gives us the $resource service. It makes working with
       // AJAX easy. Here I am using the client_id of a test app. Replace it with yours.
 
-      var api = $resource('https://api.instagram.com/v1/media/popular?client_id=:client_id&count=:count&callback=JSON_CALLBACK',{
-        client_id: '3c52889feb714456b62ba61fe7add54b',
+      var api = $resource('https://api.instagram.com/v1/users/self/media/recent/?access_token=:access_token&count=:count&callback=JSON_CALLBACK',{
+        access_token: instagramUser.accessToken,
         count: count
       },{
         fetch:{method:'JSONP'}
@@ -17,8 +52,12 @@ myApp.factory('instagram', function($resource){
 
       api.fetch(function(response){
 
-        // Call the supplied callback function
-        callback(response.data);
+        if(response.data) {
+          instagramUser.username = response.data[0].user.username;
+          instagramUser.profilePicture = response.data[0].user.profile_picture;
+
+          callback(response.data);
+        }
 
       });
     }
@@ -26,11 +65,36 @@ myApp.factory('instagram', function($resource){
 
 });
 
-function GameBoardController($scope, $timeout, instagram){
+function InstagramUserController($scope, Instagram){
+
+  $scope.authenticateUser = function(){
+    Instagram.authenticateUser();
+  }
+
+  $scope.isDefaultUser = function(user){
+    return user.accessToken == Instagram.defaultUser.accessToken;
+  }
+
+  if(window.location.hash.indexOf('#access_token=') > -1) {
+    Instagram.user.accessToken = window.location.hash.replace('#access_token=', '');
+  }
+
+  $scope.user = Instagram.user;
+}
+
+function GameBoardController($scope, $timeout, Instagram){
+
+  $scope.deal = function(){
+    $scope.cards = [];
+    $scope.flippedCards = [];
+    $scope.pairedCards = [];
+
+    $scope.fetchCards();
+  };
 
   $scope.fetchCards = function(){
 
-    instagram.fetchPopular(10, function(data){
+    Instagram.fetchPhotos(10, Instagram.user, function(data){
 
       var data = data.concat(angular.copy(data));
 
@@ -39,6 +103,7 @@ function GameBoardController($scope, $timeout, instagram){
 
           data[counter] = data[index];
           data[index] = d;
+
       });
 
       $scope.cards = data;
@@ -58,8 +123,8 @@ function GameBoardController($scope, $timeout, instagram){
         if($scope.flippedCards[0].id == $scope.flippedCards[1].id) {
 
           $timeout(function(){
-            $scope.flippedCards[0].paired = true;
-            $scope.flippedCards[1].paired = true;
+            $scope.pairedCards.push($scope.flippedCards[0]);
+            $scope.pairedCards.push($scope.flippedCards[1]);
             $scope.flippedCards = [];
           }, 400);
 
@@ -72,12 +137,13 @@ function GameBoardController($scope, $timeout, instagram){
       }
   };
 
-  $scope.faceUp = function(card){
+  $scope.isPaired = function(card){
+    return $scope.pairedCards.indexOf(card) !== -1;
+  }
+
+  $scope.isFaceUp = function(card){
     return $scope.flippedCards.indexOf(card) !== -1;
   }
 
-  $scope.cards = [];
-  $scope.flippedCards = [];
-  $scope.fetchCards();
-
+  $scope.deal();
 }
