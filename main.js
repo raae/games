@@ -10,7 +10,7 @@ myApp.factory('Utility', function($window, $resource){
   var defaultAccessToken = '412669471.c7333f1.e0b75f7652474bec8487d57fcc835635';
 
   var clientId = 'c7333f11111045efaedab47680c60437';
-  if(isProd)
+  if(isProd())
       clientId = '3c52889feb714456b62ba61fe7add54b';
 
   return {
