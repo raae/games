@@ -1,18 +1,28 @@
 var myApp = angular.module("myApp", ['ngResource']);
 
 
-myApp.factory('Utility', function($resource){
+myApp.factory('Utility', function($window, $resource){
+
+  var isProd = function() {
+    return $window.location.host.indexOf('github.io') > -1;
+  }
+
+  var defaultAccessToken = '412669471.c7333f1.e0b75f7652474bec8487d57fcc835635';
+
+  var clientId = 'c7333f11111045efaedab47680c60437';
+  if(isProd)
+      clientId = '3c52889feb714456b62ba61fe7add54b';
+
   return {
 
-    defaultAccessToken: function(){
-      return "412669471.c7333f1.e0b75f7652474bec8487d57fcc835635"
-    },
+    uri: $window.location.href,
 
-    instagramClientId: function() {
-      if(window.location.host.indexOf('localhost') > -1)
-        return 'c7333f11111045efaedab47680c60437';
-      else if(window.location.host.indexOf('github.io') > -1)
-        return '3c52889feb714456b62ba61fe7add54b';
+    defaultAccessToken: defaultAccessToken,
+
+    clientId: clientId,
+
+    goToURL: function(url) {
+      $window.location.href = url;
     }
 
   }
@@ -24,18 +34,16 @@ myApp.factory('Instagram', function($resource, Utility){
   return {
 
     user: {
-      accessToken: Utility.defaultAccessToken()
+      accessToken: Utility.defaultAccessToken
     },
 
     authenticateUser: function(){
 
-      var client_id = Utility.instagramClientId();
-
       var authenticationUrl = 'https://instagram.com/oauth/authorize/?client_id='
-        +client_id+'&redirect_uri='
-        +window.location.href+'&response_type=token';
+        +Utility.clientId+'&redirect_uri='
+        +Utility.uri+'&response_type=token';
 
-      window.location.href = authenticationUrl;
+      Utility.goToURL(authenticationUrl);
 
     },
 
@@ -65,7 +73,7 @@ myApp.factory('Instagram', function($resource, Utility){
 
 });
 
-function InstagramUserController($scope, Instagram){
+function InstagramUserController($window,$scope, Instagram){
 
   $scope.authenticateUser = function(){
     Instagram.authenticateUser();
@@ -75,8 +83,8 @@ function InstagramUserController($scope, Instagram){
     return user.accessToken == Instagram.defaultUser.accessToken;
   }
 
-  if(window.location.hash.indexOf('#access_token=') > -1) {
-    Instagram.user.accessToken = window.location.hash.replace('#access_token=', '');
+  if($window.location.hash.indexOf('#access_token=') > -1) {
+    Instagram.user.accessToken = $window.location.hash.replace('#access_token=', '');
   }
 
   $scope.user = Instagram.user;
