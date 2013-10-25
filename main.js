@@ -32,7 +32,6 @@ myApp.factory('Utility', function($window, $resource){
 myApp.factory('Instagram', function($resource, Utility){
 
   return {
-
     user: {
       accessToken: Utility.defaultAccessToken
     },
@@ -120,6 +119,9 @@ function GameBoardController($scope, $timeout, Instagram){
   };
 
   $scope.flipCard = function(card){
+
+      if($scope.isPaired(card) || $scope.isFaceUp(card))
+        return;
 
       if($scope.flippedCards.length > 1)
         return;

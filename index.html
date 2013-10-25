@@ -13,9 +13,10 @@
     </aside>
 
     <section id="gameBoard" ng-controller="GameBoardController">
-      <div class="card" ng-repeat="card in cards" ng-class="{faceup: isFaceUp(card), paired: isPaired(card)}">
-        <img ng-show="isFaceUp(card) && !isPaired(card)" ng-src="{{card.images.low_resolution.url}}" />
-        <div ng-show="!isFaceUp(card) && !isPaired(card)" ng-click="flipCard(card)"></div>
+
+      <div class="card" ng-repeat="card in cards" ng-click="flipCard(card)" ng-class="{paired: isPaired(card)}">
+        <img ng-show="isFaceUp(card)" ng-src="{{card.images.low_resolution.url}}" />
+        <img class="user-photo" ng-hide="isPaired(card) || isFaceUp(card)" ng-src="{{card.user.profile_picture}}" />
       </div>
 
     </section>
