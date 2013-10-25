@@ -1,14 +1,12 @@
 var myApp = angular.module("myApp", ['ngResource']);
 
-myApp.factory('InstagramUser', function($resource){
-  return {
-      accessToken: "412669471.c7333f1.e0b75f7652474bec8487d57fcc835635",
-  }
-});
-
 myApp.factory('Instagram', function($resource){
 
   return {
+
+    user: {
+      accessToken: "412669471.c7333f1.e0b75f7652474bec8487d57fcc835635"
+    },
 
     authenticateUser: function(){
 
@@ -48,20 +46,24 @@ myApp.factory('Instagram', function($resource){
 
 });
 
-function UserController($scope, Instagram, InstagramUser){
+function InstagramUserController($scope, Instagram){
 
   $scope.authenticateUser = function(){
     Instagram.authenticateUser();
   }
 
-  if(window.location.hash.indexOf('#access_token=') > -1) {
-    InstagramUser.accessToken = window.location.hash.replace('#access_token=', '');
+  $scope.isDefaultUser = function(user){
+    return user.accessToken == Instagram.defaultUser.accessToken;
   }
 
-  $scope.user = InstagramUser;
+  if(window.location.hash.indexOf('#access_token=') > -1) {
+    Instagram.user.accessToken = window.location.hash.replace('#access_token=', '');
+  }
+
+  $scope.user = Instagram.user;
 }
 
-function GameBoardController($scope, $timeout, Instagram, InstagramUser){
+function GameBoardController($scope, $timeout, Instagram){
 
   $scope.deal = function(){
     $scope.cards = [];
@@ -73,7 +75,7 @@ function GameBoardController($scope, $timeout, Instagram, InstagramUser){
 
   $scope.fetchCards = function(){
 
-    Instagram.fetchPhotos(10, InstagramUser, function(data){
+    Instagram.fetchPhotos(10, Instagram.user, function(data){
 
       var data = data.concat(angular.copy(data));
 
