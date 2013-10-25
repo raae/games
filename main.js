@@ -1,8 +1,23 @@
 var myApp = angular.module("myApp", ['ngResource']);
 
-myApp.factory('instagram', function($resource){
+myApp.factory('Instagram', function($resource){
 
   return {
+
+    accessToken: "",
+
+    authenticateUser: function(){
+
+      var client_id = "c7333f11111045efaedab47680c60437";
+
+      var authenticationUrl = 'https://instagram.com/oauth/authorize/?client_id='
+        +client_id+'&redirect_uri='
+        +window.location.href+'&response_type=token';
+
+      window.location.href = authenticationUrl;
+
+    },
+
     fetchPopular: function(count, callback){
 
       // The ngResource module gives us the $resource service. It makes working with
@@ -26,7 +41,16 @@ myApp.factory('instagram', function($resource){
 
 });
 
-function GameBoardController($scope, $timeout, instagram){
+function InstagramController($scope, Instagram){
+
+  $scope.authenticateUser = function(){
+    Instagram.authenticateUser();
+  }
+
+  Instagram.accessToken = window.location.hash.replace('#access_token=', '');
+}
+
+function GameBoardController($scope, $timeout, Instagram){
 
   $scope.deal = function(){
     $scope.cards = [];
@@ -37,7 +61,7 @@ function GameBoardController($scope, $timeout, instagram){
 
   $scope.fetchCards = function(){
 
-    instagram.fetchPopular(10, function(data){
+    Instagram.fetchPopular(10, function(data){
 
       var data = data.concat(angular.copy(data));
 

@@ -8,6 +8,10 @@
 
   <body ng-app="myApp">
 
+    <form ng-controller="InstagramController">
+      <button ng-click="authenticateUser()">Connect to Instagram</button>
+    </form>
+
     <ul id="gameBoard" ng-controller="GameBoardController">
       <li class="card" ng-repeat="card in cards" ng-class="{faceup: isFaceUp(card), paired: isPaired(card)}">
         <img ng-show="isFaceUp(card) && !isPaired(card)" ng-src="{{card.images.low_resolution.url}}" />
