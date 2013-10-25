@@ -1,3 +1,9 @@
+Lilly Games
+============
+
+Can be played at http://lillyapps.github.io/games/
+
+
 Lilly Memory
 ============
 
