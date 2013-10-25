@@ -4,7 +4,7 @@ myApp.factory('Instagram', function($resource){
 
   return {
 
-    accessToken: "",
+    accessToken: "412669471.c7333f1.e0b75f7652474bec8487d57fcc835635",
 
     authenticateUser: function(){
 
@@ -16,6 +16,27 @@ myApp.factory('Instagram', function($resource){
 
       window.location.href = authenticationUrl;
 
+    },
+
+    fetchPhotos: function(count, accessToken, callback){
+      // The ngResource module gives us the $resource service. It makes working with
+      // AJAX easy. Here I am using the client_id of a test app. Replace it with yours.
+
+      console.log("access token ", accessToken);
+
+      var api = $resource('https://api.instagram.com/v1/users/self/media/recent/?access_token=:access_token&count=:count&callback=JSON_CALLBACK',{
+        access_token: accessToken,
+        count: count
+      },{
+        fetch:{method:'JSONP'}
+      });
+
+      api.fetch(function(response){
+
+        // Call the supplied callback function
+        callback(response.data);
+
+      });
     },
 
     fetchPopular: function(count, callback){
@@ -41,13 +62,18 @@ myApp.factory('Instagram', function($resource){
 
 });
 
-function InstagramController($scope, Instagram){
+function UserController($scope, Instagram){
 
   $scope.authenticateUser = function(){
     Instagram.authenticateUser();
   }
 
-  Instagram.accessToken = window.location.hash.replace('#access_token=', '');
+  if(window.location.hash.indexOf('#access_token=') > -1) {
+    Instagram.accessToken = window.location.hash.replace('#access_token=', '');
+    $scope.user = {
+      username: "User"
+    };
+  }
 }
 
 function GameBoardController($scope, $timeout, Instagram){
@@ -56,12 +82,13 @@ function GameBoardController($scope, $timeout, Instagram){
     $scope.cards = [];
     $scope.flippedCards = [];
     $scope.pairedCards = [];
+
     $scope.fetchCards();
   };
 
   $scope.fetchCards = function(){
 
-    Instagram.fetchPopular(10, function(data){
+    Instagram.fetchPhotos(10, Instagram.accessToken, function(data){
 
       var data = data.concat(angular.copy(data));
 
