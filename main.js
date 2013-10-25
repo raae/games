@@ -22,30 +22,8 @@ myApp.factory('Instagram', function($resource){
       // The ngResource module gives us the $resource service. It makes working with
       // AJAX easy. Here I am using the client_id of a test app. Replace it with yours.
 
-      console.log("access token ", accessToken);
-
       var api = $resource('https://api.instagram.com/v1/users/self/media/recent/?access_token=:access_token&count=:count&callback=JSON_CALLBACK',{
         access_token: accessToken,
-        count: count
-      },{
-        fetch:{method:'JSONP'}
-      });
-
-      api.fetch(function(response){
-
-        // Call the supplied callback function
-        callback(response.data);
-
-      });
-    },
-
-    fetchPopular: function(count, callback){
-
-      // The ngResource module gives us the $resource service. It makes working with
-      // AJAX easy. Here I am using the client_id of a test app. Replace it with yours.
-
-      var api = $resource('https://api.instagram.com/v1/media/popular?client_id=:client_id&count=:count&callback=JSON_CALLBACK',{
-        client_id: '3c52889feb714456b62ba61fe7add54b',
         count: count
       },{
         fetch:{method:'JSONP'}
