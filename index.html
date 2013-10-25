@@ -9,11 +9,11 @@
   <body ng-app="myApp">
 
     <div ng-controller="UserController">
-      <form ng-hide="user">
+      <form>
         You are playing with lilly_lab's photos.
         <button ng-click="authenticateUser()">Click here to play with your own Instagram photos!</button>
       </form>
-      <div ng-show="user">You are playing with your own photos (@{{user.username}})</div>
+      <div ng-show="user.profilePicture"><img ng-src="{{user.profilePicture}}">You are playing with your own photos (@{{user.username}})</div>
     </div>
 
     <ul id="gameBoard" ng-controller="GameBoardController">

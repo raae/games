@@ -1,10 +1,14 @@
 var myApp = angular.module("myApp", ['ngResource']);
 
+myApp.factory('InstagramUser', function($resource){
+  return {
+      accessToken: "412669471.c7333f1.e0b75f7652474bec8487d57fcc835635",
+  }
+});
+
 myApp.factory('Instagram', function($resource){
 
   return {
-
-    accessToken: "412669471.c7333f1.e0b75f7652474bec8487d57fcc835635",
 
     authenticateUser: function(){
 
@@ -18,12 +22,12 @@ myApp.factory('Instagram', function($resource){
 
     },
 
-    fetchPhotos: function(count, accessToken, callback){
+    fetchPhotos: function(count, instagramUser, callback){
       // The ngResource module gives us the $resource service. It makes working with
       // AJAX easy. Here I am using the client_id of a test app. Replace it with yours.
 
       var api = $resource('https://api.instagram.com/v1/users/self/media/recent/?access_token=:access_token&count=:count&callback=JSON_CALLBACK',{
-        access_token: accessToken,
+        access_token: instagramUser.accessToken,
         count: count
       },{
         fetch:{method:'JSONP'}
@@ -31,8 +35,12 @@ myApp.factory('Instagram', function($resource){
 
       api.fetch(function(response){
 
-        // Call the supplied callback function
-        callback(response.data);
+        if(response.data) {
+          instagramUser.username = response.data[0].user.username;
+          instagramUser.profilePicture = response.data[0].user.profile_picture;
+
+          callback(response.data);
+        }
 
       });
     }
@@ -40,21 +48,20 @@ myApp.factory('Instagram', function($resource){
 
 });
 
-function UserController($scope, Instagram){
+function UserController($scope, Instagram, InstagramUser){
 
   $scope.authenticateUser = function(){
     Instagram.authenticateUser();
   }
 
   if(window.location.hash.indexOf('#access_token=') > -1) {
-    Instagram.accessToken = window.location.hash.replace('#access_token=', '');
-    $scope.user = {
-      username: "User"
-    };
+    InstagramUser.accessToken = window.location.hash.replace('#access_token=', '');
   }
+
+  $scope.user = InstagramUser;
 }
 
-function GameBoardController($scope, $timeout, Instagram){
+function GameBoardController($scope, $timeout, Instagram, InstagramUser){
 
   $scope.deal = function(){
     $scope.cards = [];
@@ -66,7 +73,7 @@ function GameBoardController($scope, $timeout, Instagram){
 
   $scope.fetchCards = function(){
 
-    Instagram.fetchPhotos(10, Instagram.accessToken, function(data){
+    Instagram.fetchPhotos(10, InstagramUser, function(data){
 
       var data = data.concat(angular.copy(data));
 
@@ -75,6 +82,7 @@ function GameBoardController($scope, $timeout, Instagram){
 
           data[counter] = data[index];
           data[index] = d;
+
       });
 
       $scope.cards = data;
