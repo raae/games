@@ -10,8 +10,11 @@ body {
   padding: 1em;
 }
 
-section, footer, header, aside, nav {
+section, footer, header, aside, nav, img {
   display: block;
+}
+
+section, aside {
   margin: 2em auto;
 }
 
