@@ -1,16 +1,35 @@
 var myApp = angular.module("myApp", ['ngResource']);
 
-myApp.factory('Instagram', function($resource){
+
+myApp.factory('Utility', function($resource){
+  return {
+
+    defaultAccessToken: function(){
+      return "412669471.c7333f1.e0b75f7652474bec8487d57fcc835635"
+    },
+
+    instagramClientId: function() {
+      if(window.location.host.indexOf('localhost') > -1)
+        return 'c7333f11111045efaedab47680c60437';
+      else if(window.location.host.indexOf('github.io') > -1)
+        return '3c52889feb714456b62ba61fe7add54b';
+    }
+
+  }
+
+});
+
+myApp.factory('Instagram', function($resource, Utility){
 
   return {
 
     user: {
-      accessToken: "412669471.c7333f1.e0b75f7652474bec8487d57fcc835635"
+      accessToken: Utility.defaultAccessToken()
     },
 
     authenticateUser: function(){
 
-      var client_id = "c7333f11111045efaedab47680c60437";
+      var client_id = Utility.instagramClientId();
 
       var authenticationUrl = 'https://instagram.com/oauth/authorize/?client_id='
         +client_id+'&redirect_uri='
